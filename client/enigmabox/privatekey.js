@@ -61,20 +61,12 @@ function attachSecret(to, secret){
 
 class IdentityPrivateKey{
 
-    id = null;
-    keeper = null;
-
     constructor(serialized, password){
         if(_.isString(serialized)){
-            this.fromString(serialized, password);
+            attachSecret(this, decrypt(password, serialized)); 
         } else {
             attachSecret(this, nacl.randomBytes(32));
         }
-    }
-
-    fromString(serialized, password){
-        const secret = decrypt(serialized, password);
-        attachSecret(this, secret);
     }
 
 }
