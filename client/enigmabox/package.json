@@ -1,0 +1,19 @@
+{
+  "name": "enigmabox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "enigmabox.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "NeoAtlantis",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "bson": "^4.0.3",
+    "lodash": "^4.17.15",
+    "store": "^2.0.12"
+  }
+}
