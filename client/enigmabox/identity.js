@@ -1,3 +1,19 @@
+/*
+Identity Keys Pair
+==================
+
+This module exports 2 classes: IdentityPrivateKey and IdentityPublicKey.
+
+EnigmaBox is designed to associate each user with a random generated identity
+key. This enables users on its network to identify each other, even across
+different hubs(server-side message exchanges). This module provides the basic
+functionality for this purpose.
+
+*/
+
+
+
+
 const _ = require("lodash");
 const bson = require("bson");
 const nacl = require("./lib/nacl");
