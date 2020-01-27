@@ -5,7 +5,8 @@ const symmetricEncryption = require("./symmetric-encryption");
 const encrypt = symmetricEncryption.encrypt;
 const decrypt = symmetricEncryption.decrypt;
 
-function hexToUUID(hex){
+function getFingerprint(buffer){
+    const hex = Buffer.from(nacl.hash(buffer).slice(0,16)).toString("hex");
     return [
         hex.slice(0, 8),
         hex.slice(8, 12),
@@ -23,26 +24,22 @@ function PrivateKeyKeeperFactory(secret){
 
     var self = this;
 
-    if(undefined === secret){
-        secret = nacl.randomBytes(64);
-    } else {
-        if(!_.isBuffer(secret) && !_.isTypedArray(secret)) throw Error();
-    }
+    if(!_.isBuffer(secret) && !_.isTypedArray(secret)) throw Error();
 
-    const signingSecret = nacl.hash(secret);
-    const signingKeys = nacl.sign.keyPair.fromSecretKey(signingSecret);
-    const fingerprint = hexToUUID(Buffer.from(
-        nacl.hash(signingKeys.publicKey).slice(0,16)).toString("hex"));
+    const signingSecret = nacl.hash(secret).slice(0, nacl.sign.seedLength);
+    const signingKeys = nacl.sign.keyPair.fromSeed(signingSecret);
+    const fingerprint = getFingerprint(signingKeys.publicKey);
 
     return {
         getFingerprint:
             () => fingerprint, 
         getPublic:
             () => Buffer.from(signingKeys.publicKey).toString("base64"),
-        sign: 
-            (message) => new Buffer.from(
+        sign: function(message){
+            return new Buffer.from(
                 nacl.sign(message, signingKeys.secretKey)
-            ).toString("base64"),
+            ).toString("base64");
+        },
     }
 }
 
@@ -70,3 +67,29 @@ class IdentityPrivateKey{
     }
 
 }
+
+module.exports.IdentityPrivateKey = IdentityPrivateKey;
+
+
+
+
+class IdentityPublicKey{
+    
+    constructor(publicKeyStr){
+        this.publicKey = new Uint8Array(Buffer.from(publicKeyStr, "base64"));
+        if(this.publicKey.length != nacl.sign.publicKeyLength){
+            throw Error("Invalid public key read.");
+        }
+        this.id = getFingerprint(this.publicKey);
+    }
+
+    verify(signedMessage){
+        const bufMessage = Buffer.from(signedMessage, "base64");
+        const output = nacl.sign.open(bufMessage, this.publicKey);
+        if(!output) return null;
+        return Buffer.from(output);
+    }
+
+}
+
+module.exports.IdentityPublicKey = IdentityPublicKey;
