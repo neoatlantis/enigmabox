@@ -21,16 +21,6 @@ const symmetricEncryption = require("./symmetric-encryption");
 const encrypt = symmetricEncryption.encrypt;
 const decrypt = symmetricEncryption.decrypt;
 
-function getFingerprint(buffer){
-    const hex = Buffer.from(nacl.hash(buffer).slice(0,16)).toString("hex");
-    return [
-        hex.slice(0, 8),
-        hex.slice(8, 12),
-        hex.slice(12, 16),
-        hex.slice(16, 20),
-        hex.slice(20, 32),
-    ].join("-");
-}
 
 
 function PrivateKeyKeeperFactory(secret){
@@ -44,17 +34,16 @@ function PrivateKeyKeeperFactory(secret){
 
     const signingSecret = nacl.hash(secret).slice(0, nacl.sign.seedLength);
     const signingKeys = nacl.sign.keyPair.fromSeed(signingSecret);
-    const fingerprint = getFingerprint(signingKeys.publicKey);
 
     return {
-        getFingerprint:
-            () => fingerprint, 
         getPublic:
             () => Buffer.from(signingKeys.publicKey).toString("base64"),
-        sign: function(message){
-            return new Buffer.from(
+        sign: function(message, useBuffer){
+            const sig = new Buffer.from(
                 nacl.sign(message, signingKeys.secretKey)
-            ).toString("base64");
+            );
+            if(!useBuffer) return sig.toString("base64");
+            return sig;
         },
     }
 }
@@ -67,7 +56,6 @@ function attachSecret(to, secret){
     const keeper = PrivateKeyKeeperFactory(secret);
     to.sign = keeper.sign;
     to.publicKey = keeper.getPublic();
-    to.id = keeper.getFingerprint();
     to.toString = (password) => encrypt(password, secret);
 }
 
@@ -96,7 +84,6 @@ class IdentityPublicKey{
         if(this.publicKey.length != nacl.sign.publicKeyLength){
             throw Error("Invalid public key read.");
         }
-        this.id = getFingerprint(this.publicKey);
     }
 
     verify(signedMessage){
