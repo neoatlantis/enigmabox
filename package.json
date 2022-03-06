@@ -1,8 +1,8 @@
 {
-  "name": "enigmabox-client",
+  "name": "enigmabox",
   "version": "1.0.0",
   "description": "Client for a secure text communication platform.",
-  "main": "enigmabox-client/index.js",
+  "main": "enigmabox/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
