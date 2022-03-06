@@ -1,0 +1,13 @@
+<html>
+<head>
+<script>
+if(window.location.hash != ""){
+    const password = window.location.hash.slice(1);
+    localStorage.setItem("password", password);
+    window.location = "/";
+}
+</script>
+</head>
+<body>
+</body>
+</html>
