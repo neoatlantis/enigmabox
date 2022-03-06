@@ -9,6 +9,7 @@
   "author": "NeoAtlantis",
   "license": "GPL-2.0",
   "dependencies": {
+    "@ygoe/msgpack": "^1.0.3",
     "express": "^4.17.3",
     "open": "^8.4.0"
   }
