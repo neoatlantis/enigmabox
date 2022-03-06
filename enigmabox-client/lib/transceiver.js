@@ -1,3 +1,7 @@
+const $transceiver = require("./channel")("transceiver");
+
+
+
 const { client, xml } = require("@xmpp/client");
 const events = require("events");
 const msgpack = require("@ygoe/msgpack");
@@ -16,7 +20,7 @@ function unpack(data, format){
 
 
 
-var xmppclient, transceiver;
+var xmppclient;
 
 function init(options){
     if(null != xmppclient) return;
@@ -24,8 +28,7 @@ function init(options){
     handle_xmpp_error(xmppclient);
     xmppclient.start();
 
-    transceiver = new Transceiver();
-    return transceiver
+    setup_client(xmppclient);
 }
 
 
@@ -48,82 +51,69 @@ function handle_xmpp_error(client){
 
 
 
+function setup_client(client){
 
+    client.on("online", ()=>$transceiver.publish("online"));
+    
+    client.iqCallee.set(RPCNS, "enigma", async (ctx)=>{
+        const jid_from = ctx.from.toString();
 
-
-class Transceiver extends events.EventEmitter {
-
-    constructor (){
-        super();
-        const self = this;
-
-        this.client = xmppclient;
-        this.timeout = 30000;
-
-        this.client.iqCallee.set(RPCNS, "enigma", async (ctx)=>{
-            const jid_from = ctx.from.toString();
-
-            let result = null;
-            try{
-                result = unpack(ctx.element.text());
-            } catch(e){
-                return RET_BADREQUEST;
-            }
-
-            this.emit("data", { from: jid_from, data: result });
-            return RET_SUCCESS;
-
-        });
-
-        this.client.on("online", ()=>{
-            this.emit("online");
-        });
-    }
-
-
-    async publish(target_jid, data){
-        if(!target_jid){
-            throw Error("no-receiver");
+        let result = null;
+        try{
+            result = unpack(ctx.element.text());
+        } catch(e){
+            return RET_BADREQUEST;
         }
+
+        $transceiver.publish("received", { from: jid_from, data: result });
+        return RET_SUCCESS;
+    });
+
+
+    $transceiver.subscribe("transmit", async (data)=>{
+        if(!data.to) throw Error("no-receiver");
 
         let result;
         try{
-            result = await this.client.iqCaller.request(
-                xml("iq", { type: "set", to: target_jid },
-                    xml(
-                        "enigma",
-                        { xmlns: RPCNS },
-                        pack(data)
-                    )
+            result = await client.iqCaller.request(
+                xml("iq", { type: "set", to: data.to },
+                    xml("enigma", { xmlns: RPCNS }, pack(data.data))
                 )
             );
         } catch(e){
-            return { error: e.message }
+            $transceiver.publish("result", {
+                id: data.id,
+                error: e.message
+            });
         }
 
         try{
             if(result.children[0].name == "enigma-success"){
-                return { success: true };
+                $transceiver.publish("result", {
+                    id: data.id,
+                    success: true,
+                });
             } else {
-                return { error: result.children[0].text() };
+                $transceiver.publish("result", {
+                    id: data.id,
+                    error: result.children[0].text()
+                });
             }
         } catch(e){
-            return { error: e.message };
+            $transceiver.publish("result", {
+                id: data.id,
+                error: e.message, 
+            });
         }
+    });
 
-    }
+
 }
-
-
-
-
-
 
 
 
 module.exports = { 
     init: init,
-    transceiver: ()=>transceiver,
     get_jid: ()=>xmppclient.jid.toString(),
     get_bare_jid: ()=>xmppclient.jid.bare().toString(), 
 };
