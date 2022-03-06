@@ -1,10 +1,14 @@
 const express = require("express");
+const app = express();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 const random_bytes = require("./util/random_bytes");
 const args = require("./args");
 
 
 const routing_modules = [
     "frontend",
+    "postalexchange",
 ];
 
 
@@ -19,12 +23,11 @@ async function initapp(){
         60000 + (portrandomness[0] * portrandomness[1] % 4000));
     const url = `http://localhost:${port}`;
 
-    const app = express();
     for(let routing_module of routing_modules){
-        require(`./route.${routing_module}.js`)(app, express);
+        require(`./route.${routing_module}.js`)({app, express, io});
     }
 
-    app.listen(port);
+    http.listen(port);
     return {
         url: url,
         password: entry_password,

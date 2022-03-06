@@ -10,8 +10,11 @@
   "license": "GPL-2.0",
   "dependencies": {
     "@ygoe/msgpack": "^1.0.3",
+    "deferred": "^0.7.11",
     "express": "^4.17.3",
     "open": "^8.4.0",
-    "postal": "^2.0.6"
+    "postal": "^2.0.6",
+    "postal.request-response": "^0.3.1",
+    "socket.io": "^4.4.1"
   }
 }

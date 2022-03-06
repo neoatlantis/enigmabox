@@ -1,4 +1,4 @@
-module.exports = function(app, express){
+module.exports = function({app, express}){
 
     app.use("/", express.static(__dirname + "/frontend"));
 
