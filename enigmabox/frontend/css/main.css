@@ -1,0 +1,32 @@
+body{
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+}
+
+#navbar{
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0.3em 0;
+}
+#navbar div{
+    flex-grow: 1;
+    background: #FFEE00;
+    padding: 0.3em;
+    cursor: pointer;
+}
+#navbar div.active{
+    text-decoration: underline;
+    background: #FF9900;
+}
+
+#content{
+    padding: 0.3em;
+}
+
+
+table.task-list{
+    width: 100%;
+}
+table.task-list, .task-list tr,td{
+    border: 1px solid black;
+}

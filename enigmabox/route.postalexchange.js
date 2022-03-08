@@ -5,13 +5,13 @@ backend(nodejs)-postal.js messaging system.
 
 */
 
-const $f2b = require("./lib/channel")("f2b"),
-      $b2f = require("./lib/channel")("b2f");
+const $bg = require("./lib/channel")("bg"),
+      $fg = require("./lib/channel")("fg");
 
-function on_f2b_exchange(e){
+function on_bg_exchange(e){
     const topic = e.topic;
     const data = e.data;
-    $f2b.publish(topic, data);
+    $bg.publish(topic, data);
     console.log("topic", topic, "data", data);
 }
 
@@ -22,15 +22,19 @@ function setup_socket(socket){
     // TODO authentication of this socket
 
     // frontend -> backend
-    socket.on("exchange", on_f2b_exchange);
+    // Everything emitted to foreground's "bg" channel are proxied using
+    // socket.io. They are captured here.
+    socket.on("exchange", on_bg_exchange);
 
     // backend -> frontend
-    const subscription = $b2f.subscribe("*", function(data, env){
+    // We are at background, anything emitted to background's "fg" channel must
+    // be proxied to actual foreground.
+    const subscription = $fg.subscribe("*", function(data, env){
         socket.emit("exchange", {topic: env.topic, data: data});
     });
 
     socket.on("disconnection", function(){
-        $b2f.unsubscribe(subscription);
+        $fg.unsubscribe(subscription);
     });
 }
 
