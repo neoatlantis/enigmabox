@@ -15,6 +15,7 @@
     "open": "^8.4.0",
     "postal": "^2.0.6",
     "postal.request-response": "^0.3.1",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "sqlite3": "^5.0.2"
   }
 }
