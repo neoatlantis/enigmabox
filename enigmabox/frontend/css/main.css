@@ -3,7 +3,7 @@ body{
     margin: 0 0 0 0;
 }
 
-#navbar{
+/*#navbar{
     display: flex;
     flex-direction: row;
     margin: 0 0 0.3em 0;
@@ -29,4 +29,4 @@ table.task-list{
 }
 table.task-list, .task-list tr,td{
     border: 1px solid black;
-}
+}*/

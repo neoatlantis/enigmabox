@@ -3,20 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <title>EnigmaBox</title>
+    <script src="/js/lib/bootstrap.bundle.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/lib/vue.js"></script>
     <script src="/js/lib/lodash.js"></script>
     <script src="/js/lib/postal.min.js"></script>
     <script type="module" src="/js/main.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body><div id="app">
+<body><div id="app" class="container">
 
-<div id="navbar">
-    <div v-on:click="current_view='tasks'"  v-bind:class="{'active':current_view=='tasks'}">Tasks</div>
-    <div v-on:click="current_view='pgp'"    v-bind:class="{'active':current_view=='pgp'}">PGP</div>
-    <div v-on:click="current_view='config'" v-bind:class="{'active':current_view=='config'}">Configuration</div>
-</div>
+<navigation-bar v-on:changed="on_navbar_changed"></navigation-bar>
 
 <div id="content">
     <div v-show="'tasks'==current_view">
