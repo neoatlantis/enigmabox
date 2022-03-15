@@ -15,7 +15,7 @@ socket.on("exchange", on_fg_exchange);
 
 $bg.subscribe("*", function(data, env){
     const topic = env.topic;
-    console.log(data, env);
+//    console.log(data, env);
     socket.emit("exchange", {topic, data});
 });
 
