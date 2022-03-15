@@ -11,6 +11,9 @@ const routing_modules = [
     "postalexchange",
 ];
 
+const service_modules = [
+    "emergency",
+];
 
 async function initapp(){
     
@@ -25,6 +28,10 @@ async function initapp(){
 
     for(let routing_module of routing_modules){
         require(`./route.${routing_module}.js`)({app, express, io});
+    }
+
+    for(let service_module of service_modules){
+        require(`./service.${service_module}.js`);
     }
 
     http.listen(port);

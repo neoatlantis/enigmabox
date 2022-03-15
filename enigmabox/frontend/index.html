@@ -12,9 +12,12 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body><div id="app" class="container">
+<body><div id="app" class="container"><div v-if="!emergency">
 
-<navigation-bar v-on:changed="on_navbar_changed"></navigation-bar>
+<navigation-bar
+    v-on:changed="on_navbar_changed"
+    v-on:emergency="on_emergency"
+></navigation-bar>
 
 <div id="content">
     <div v-show="'tasks'==current_view">
@@ -32,6 +35,22 @@
 
 </div>
 
+
+
+</div>
+<div v-else style="padding: 3em">
+    <h1>Emergency Mode Activated</h1>
+    <br />
+    <div class="alert alert-danger">
+        Emergency mode is activated. All data in memory is erased. Background
+        service shutdown.
+    </div>
+    <div>
+        Don't worry - data which were permanently stored are still available.
+        You need to login again to use this system.
+    </div>
+
+</div>
 
 
 </div></body>

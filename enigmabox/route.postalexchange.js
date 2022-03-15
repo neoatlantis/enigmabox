@@ -12,12 +12,12 @@ function on_bg_exchange(e){
     const topic = e.topic;
     const data = e.data;
     $bg.publish(topic, data);
-    console.log("topic", topic, "data", data);
+    //console.log("topic", topic, "data", data);
 }
 
 
 function setup_socket(socket){
-    console.log("new connection");
+    //console.log("new connection");
 
     // TODO authentication of this socket
 
